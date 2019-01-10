@@ -16,5 +16,20 @@ namespace LodestoneParser
 
             _doc = web.Load(url);
         }
+
+        public string GetTitle()
+        {
+            return _doc.DocumentNode.SelectSingleNode("//div[@class='frame__chara__title']").InnerText;
+        }
+
+        public string GetName()
+        {
+            return _doc.DocumentNode.SelectSingleNode("//div[@class='frame__chara__name']").InnerText;
+        }
+
+        public string GetServer()
+        {
+            return _doc.DocumentNode.SelectSingleNode("//div[@class='frame__chara__world']").InnerText;
+        }
     }
 }
