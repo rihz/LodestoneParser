@@ -11,9 +11,8 @@ namespace ParserConsole
         static void Main(string[] args)
         {
             var parser = new LodestoneParser.LodestoneParser(6738422);
-            Console.WriteLine(parser.GetTitle());
-            Console.WriteLine(parser.GetName());
-            Console.WriteLine(parser.GetServer());
+
+            Console.WriteLine(parser.GetIconUrl());
         }
     }
 }

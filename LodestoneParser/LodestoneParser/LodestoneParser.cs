@@ -33,5 +33,14 @@ namespace LodestoneParser
         {
             return _doc.SelectSingleNode("//p[@class='frame__chara__world']").InnerText;
         }
+
+        public string GetIconUrl()
+        {
+            var div = _doc.SelectSingleNode("//div[@class='frame__chara__face']/img");
+
+            return div.Attributes["src"].Value;
+        }
+
+
     }
 }
