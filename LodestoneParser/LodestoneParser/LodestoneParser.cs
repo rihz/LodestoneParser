@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Net;
 using HtmlAgilityPack;
+using LodestoneParser.Character;
+using LodestoneParser.Enums;
 using LodestoneParser.Exceptions;
 
 namespace LodestoneParser
@@ -34,7 +38,7 @@ namespace LodestoneParser
         /// <returns>The character's title.</returns>
         public string GetTitle()
         {
-            return GetNodeForCharacter("//p[@class='frame__chara__title']").InnerText;
+            return GetSingleNodeForCharacter("//p[@class='frame__chara__title']").InnerText;
         }
 
         /// <summary>
@@ -43,7 +47,7 @@ namespace LodestoneParser
         /// <returns>The character's name.</returns>
         public string GetName()
         {
-            return GetNodeForCharacter("//p[@class='frame__chara__name']").InnerText;
+            return GetSingleNodeForCharacter("//p[@class='frame__chara__name']").InnerText;
         }
 
         /// <summary>
@@ -52,7 +56,7 @@ namespace LodestoneParser
         /// <returns>The character's server.</returns>
         public string GetServer()
         {
-            return GetNodeForCharacter("//p[@class='frame__chara__world']").InnerText;
+            return GetSingleNodeForCharacter("//p[@class='frame__chara__world']").InnerText;
         }
 
         /// <summary>
@@ -61,9 +65,131 @@ namespace LodestoneParser
         /// <returns>The character's icon url.</returns>
         public string GetIconUrl()
         {
-            var div = GetNodeForCharacter("//div[@class='frame__chara__face']/img");
+            var div = GetSingleNodeForCharacter("//div[@class='frame__chara__face']/img");
 
             return div.Attributes["src"].Value;
+        }
+
+        /// <summary>
+        /// Get the loaded character's level in a specific job.
+        /// </summary>
+        /// <param name="job">Job with desired level.</param>
+        /// <returns>Level of the job for the loaded character.</returns>
+        public string GetJobLevel(JobEnum job)
+        {
+            var xpath = "//div[@class='character__profile__detail']/div[{0}]/div/ul/";
+
+            if (job == JobEnum.WAR || job == JobEnum.GLD || job == JobEnum.DRK
+                || job == JobEnum.WHM || job == JobEnum.SCH || job == JobEnum.AST)
+                xpath = string.Format(xpath, 2);
+            else if (job == JobEnum.MNK || job == JobEnum.DRG || job == JobEnum.NIN
+                || job == JobEnum.SMN || job == JobEnum.SAM || job == JobEnum.RDM
+                || job == JobEnum.BLM || job == JobEnum.BRD || job == JobEnum.MCH
+                || job == JobEnum.BLU)
+                xpath = string.Format(xpath, 3);
+            else if (job == JobEnum.BSM || job == JobEnum.ARM || job == JobEnum.ALC
+                || job == JobEnum.CRP || job == JobEnum.CUL || job == JobEnum.GSM
+                || job == JobEnum.LTW || job == JobEnum.WVR)
+                xpath = string.Format(xpath, 4);
+            else
+                xpath = string.Format(xpath, 5);
+
+            if (job == JobEnum.GLD || job == JobEnum.MNK || job == JobEnum.CRP || job == JobEnum.MIN)
+                xpath += "li[1]";
+            else if (job == JobEnum.WAR || job == JobEnum.DRG || job == JobEnum.BSM || job == JobEnum.BTN)
+                xpath += "li[2]";
+            else if (job == JobEnum.DRK || job == JobEnum.NIN || job == JobEnum.ARM || job == JobEnum.FSH)
+                xpath += "li[3]";
+            else if (job == JobEnum.WHM || job == JobEnum.SAM || job == JobEnum.GSM)
+                xpath += "li[4]";
+            else if (job == JobEnum.SCH || job == JobEnum.BRD || job == JobEnum.LTW)
+                xpath += "li[5]";
+            else if (job == JobEnum.AST || job == JobEnum.MCH || job == JobEnum.WVR)
+                xpath += "li[6]";
+            else if (job == JobEnum.BLM || job == JobEnum.ALC)
+                xpath += "li[7]";
+            else if (job == JobEnum.SMN || job == JobEnum.CUL)
+                xpath += "li[8]";
+            else if (job == JobEnum.RDM)
+                xpath += "li[9]";
+            else
+                xpath += "li[10]";
+
+            return GetSingleNodeForCharacter(xpath).InnerText;
+        }
+
+        /// <summary>
+        /// Get the loaded character's profile text.
+        /// </summary>
+        /// <returns>The character's profile text.</returns>
+        public string GetProfile()
+        {
+            return GetSingleNodeForCharacter("//div[@class='character__selfintroduction']").InnerText;
+        }
+
+        /// <summary>
+        /// Get a list of all mounts owned by the loaded character.
+        /// </summary>
+        /// <returns>List of Mount objects with name and icon URL.</returns>
+        public List<Mount> GetMounts()
+        {
+            var list = GetNodesForCharacter("//div[@class='character__mounts']/ul/li");
+            var mounts = new List<Mount>();
+
+            foreach(var node in list)
+            {
+                var name = node.FirstChild.Attributes["data-tooltip"].Value;
+                var img = node.FirstChild.FirstChild.Attributes["src"].Value;
+
+                mounts.Add(new Mount()
+                {
+                    Name = name,
+                    Image = img
+                });
+            }
+
+            return mounts;
+        }
+
+        /// <summary>
+        /// Get a list of all minions owned by the loaded character.
+        /// </summary>
+        /// <returns>List of Minion objects with name and icon URL.</returns>
+        public List<Minion> GetMinions()
+        {
+            var list = GetNodesForCharacter("//div[@class='character__minion']/ul/li");
+            var minions = new List<Minion>();
+
+            foreach (var node in list)
+            {
+                var name = node.FirstChild.Attributes["data-tooltip"].Value;
+                var img = node.FirstChild.FirstChild.Attributes["src"].Value;
+
+                minions.Add(new Minion()
+                {
+                    Name = name,
+                    Image = img
+                });
+            }
+
+            return minions;
+        }
+
+        /// <summary>
+        /// Check that the loaded character's profile contains the passed string.
+        /// </summary>
+        /// <param name="check">String to find in profile.</param>
+        /// <returns>True or false based on whether the value could be found.</returns>
+        public bool CheckProfileContains(string check)
+        {
+            return GetProfile().Contains(check);
+        }
+
+        public CharacterWeapon GetWeapon()
+        {
+            var node = GetSingleNodeForCharacter("//div[@class='character__class__arms']/div[1]/div/div");
+
+            return new CharacterWeapon(node);
         }
 
         /// <summary>
@@ -72,10 +198,22 @@ namespace LodestoneParser
         /// <param name="xpath">Xpath to the HTML node.</param>
         /// <returns>HtmlNode located at xpath.</returns>
         /// <exception cref="CharacterNotLoadedException"></exception>
-        HtmlNode GetNodeForCharacter(string xpath)
+        HtmlNode GetSingleNodeForCharacter(string xpath)
         {
             return _doc != null
                 ? _doc.SelectSingleNode(xpath)
+                : throw new CharacterNotLoadedException();
+        }
+
+        /// <summary>
+        /// Get a collection of nodes on the loaded character's Lodestone page.
+        /// </summary>
+        /// <param name="xpath">Xpath to the HTML nodes.</param>
+        /// <returns>HtmlNodeCollection located at xpath.</returns>
+        HtmlNodeCollection GetNodesForCharacter(string xpath)
+        {
+            return _doc != null
+                ? _doc.SelectNodes(xpath)
                 : throw new CharacterNotLoadedException();
         }
     }

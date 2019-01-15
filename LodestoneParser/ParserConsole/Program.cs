@@ -10,9 +10,12 @@ namespace ParserConsole
     {
         static void Main(string[] args)
         {
-            var parser = new LodestoneParser.LodestoneParser(6738422);
+            var parser = new LodestoneParser.LodestoneParser();
+            parser.LoadCharacter(6738422);
 
-            Console.WriteLine(parser.GetIconUrl());
+            var p = parser.GetWeapon();
+
+            var l = 'l';
         }
     }
 }
