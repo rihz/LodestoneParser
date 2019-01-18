@@ -50,7 +50,7 @@ namespace LodestoneParser.Character
 
         public CharacterWeapon(HtmlNode node)
         {
-            IconUrl = node.FirstChild.FirstChild.ChildNodes[0].ChildNodes[0].ChildNodes[0].Attributes["src"].Value;
+            IconUrl = node.FirstChild.FirstChild.ChildNodes[0].ChildNodes[0].ChildNodes["img"].Attributes["src"].Value;
             Name = node.FirstChild.FirstChild.FirstChild.ChildNodes[1].ChildNodes["h2"].InnerText;
             ItemLevel = int.Parse(node.FirstChild.ChildNodes[2].InnerText.Substring(node.FirstChild.ChildNodes[2].InnerText.LastIndexOf(" ") + 1));
             Damage = int.Parse(node.FirstChild.ChildNodes[3].FirstChild.LastChild.FirstChild.FirstChild.InnerText);
@@ -84,6 +84,9 @@ namespace LodestoneParser.Character
             Desynthesizable = (node.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[2].ChildNodes["span"].InnerText == "Yes");
             Dyable = (node.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[3].ChildNodes["span"].InnerText == "Yes");
         }
+
+        public CharacterWeapon()
+        { }
     }
 
     public class CharacterGear : CharacterItem
@@ -91,6 +94,37 @@ namespace LodestoneParser.Character
         public int Defense { get; set; }
 
         public int MagicDefense { get; set; }
+
+        public CharacterGear(HtmlNode node)
+        {
+            IconUrl = node.FirstChild.FirstChild.FirstChild.ChildNodes[0].ChildNodes[0].ChildNodes["img"].Attributes["src"].Value;
+            Name = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].ChildNodes["h2"].InnerText;
+            ItemLevel = int.Parse(node.FirstChild.FirstChild.ChildNodes[2].InnerText.Substring(node.FirstChild.FirstChild.ChildNodes[2].InnerText.LastIndexOf(" ") + 1));
+            EquippableBy = EquippableJob.CreateList(node.FirstChild.FirstChild.ChildNodes[4].FirstChild);
+
+            var stats = new List<BonusStat>();
+            var statNodes = node.FirstChild.FirstChild.ChildNodes[4].ChildNodes["ul"].ChildNodes;
+
+            foreach (var n in statNodes)
+            {
+                stats.Add(new BonusStat(n));
+            }
+
+            BonusStats = stats;
+            RepairInfo = new RepairInfo(node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[9].ChildNodes);
+            var company = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[0].FirstChild.Attributes["data-tooltip"].Value;
+            var glamour = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[1].FirstChild.Attributes["data-tooltip"].Value;
+            var armoire = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[2].FirstChild.Attributes["data-tooltip"].Value;
+
+            CompanyCrest = !company.Contains("Cannot");
+            GlamourChest = !glamour.Contains("Cannot");
+            Armoire = !armoire.Contains("Cannot");
+
+            Convertible = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[0].ChildNodes["span"].InnerText == "Yes");
+            Projectable = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[1].ChildNodes["span"].InnerText == "Yes");
+            Desynthesizable = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[2].ChildNodes["span"].InnerText == "Yes");
+            Dyable = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[3].ChildNodes["span"].InnerText == "Yes");
+        }
     }
 
     public class EquippableJob
@@ -107,6 +141,31 @@ namespace LodestoneParser.Character
             Job = parsed;
             Level = int.Parse(node.LastChild.InnerText.Substring(node.LastChild.InnerText.LastIndexOf(" ") + 1));
         }
+
+        public EquippableJob(JobEnum job, int level)
+        {
+            Job = job;
+            Level = level;
+        }
+
+        public static List<EquippableJob> CreateList(HtmlNode node)
+        {
+            var list = new List<EquippableJob>();
+            var fullString = node.FirstChild.FirstChild.InnerText;
+            var level = int.Parse(node.LastChild.InnerText.Substring(node.LastChild.InnerText.LastIndexOf(" ") + 1));
+
+            var job = fullString.Split(' ');
+            
+            foreach(var j in job)
+            {
+                JobEnum parsed;
+                Enum.TryParse(j, out parsed);
+
+                list.Add(new EquippableJob(parsed, level));
+            }
+
+            return list;
+        }
     }
 
     public class BonusStat
@@ -117,10 +176,7 @@ namespace LodestoneParser.Character
 
         public BonusStat(HtmlNode node)
         {
-            StatEnum parsed;
-            Enum.TryParse(node.ChildNodes["span"].InnerText, out parsed);
-
-            Stat = parsed;
+            Stat = StatParser.Parse(node.ChildNodes["span"].InnerText);
             Bonus = int.Parse(node.InnerText.Substring(node.InnerText.IndexOf('+') + 1));
         }
     }

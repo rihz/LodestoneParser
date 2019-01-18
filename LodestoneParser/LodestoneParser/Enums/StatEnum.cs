@@ -16,6 +16,8 @@ namespace LodestoneParser.Enums
          Craftsmanship,
          Control,
          Gathering,
-         Perception
+         Perception,
+         CriticalHit,
+         Determination
     }
 }

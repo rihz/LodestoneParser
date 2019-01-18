@@ -192,6 +192,117 @@ namespace LodestoneParser
             return new CharacterWeapon(node);
         }
 
+        public CharacterGear GetHeadGear()
+        {
+            var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div/div[1]/div[last()]");
+
+            return new CharacterGear(node);
+        }
+
+        public CharacterGear GetChestGear()
+        {
+            var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div/div[2]/div[last()]");
+
+            return new CharacterGear(node);
+        }
+
+        public CharacterGear GetArmGear()
+        {
+            var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div/div[3]/div[last()]");
+
+            return new CharacterGear(node);
+        }
+
+        public CharacterGear GetWaistGear()
+        {
+            var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div/div[4]/div[last()]");
+
+            return new CharacterGear(node);
+        }
+
+        public CharacterGear GetLegGear()
+        {
+            var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div/div[5]/div[last()]");
+
+            return new CharacterGear(node);
+        }
+
+        public CharacterGear GetFootGear()
+        {
+            var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div/div[6]/div[last()]");
+
+            return new CharacterGear(node);
+        }
+
+        public CharacterWeapon GetOffhand()
+        {
+            try
+            {
+                var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div[3]/div[1]/div[2]");
+
+                return new CharacterWeapon(node);
+            }
+            catch(Exception ex)
+            {
+                return new CharacterWeapon();
+            }
+        }
+
+        public CharacterGear GetEarrings()
+        {
+            var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div[3]/div[2]/div[2]");
+
+            return new CharacterGear(node);
+        }
+
+        public CharacterGear GetNecklace()
+        {
+            var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div[3]/div[3]/div[2]");
+
+            return new CharacterGear(node);
+        }
+
+        public CharacterGear GetBracelet()
+        {
+            var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div[3]/div[4]/div[2]");
+
+            return new CharacterGear(node);
+        }
+
+        public CharacterGear GetRing1()
+        {
+            var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div[3]/div[5]/div[2]");
+
+            return new CharacterGear(node);
+        }
+
+        public CharacterGear GetRing2()
+        {
+            var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div[3]/div[6]/div[2]");
+
+            return new CharacterGear(node);
+        }
+
+        public List<CharacterItem> GetCharacterItems()
+        {
+            return new List<CharacterItem>()
+            {
+                GetWeapon(),
+                GetHeadGear(),
+                GetChestGear(),
+                GetArmGear(),
+                GetWaistGear(),
+                GetLegGear(),
+                GetFootGear(),
+                GetOffhand(),
+                GetEarrings(),
+                GetNecklace(),
+                GetBracelet(),
+                GetRing1(),
+                GetRing2()
+            };
+        }
+
         /// <summary>
         /// Get a node on the loaded character's Lodestone page.
         /// </summary>
