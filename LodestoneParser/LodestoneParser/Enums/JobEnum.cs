@@ -32,6 +32,7 @@ namespace LodestoneParser.Enums
         CUL,
         MIN,
         BTN,
-        FSH
+        FSH,
+        Unknown
     }
 }

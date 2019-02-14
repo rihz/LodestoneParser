@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Net;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
 using LodestoneParser.Character;
 using LodestoneParser.Enums;
 using LodestoneParser.Exceptions;
+using System;
+using System.Collections.Generic;
 
 namespace LodestoneParser
 {
@@ -136,7 +134,7 @@ namespace LodestoneParser
             var list = GetNodesForCharacter("//div[@class='character__mounts']/ul/li");
             var mounts = new List<Mount>();
 
-            foreach(var node in list)
+            foreach (var node in list)
             {
                 var name = node.FirstChild.Attributes["data-tooltip"].Value;
                 var img = node.FirstChild.FirstChild.Attributes["src"].Value;
@@ -242,7 +240,7 @@ namespace LodestoneParser
 
                 return new CharacterWeapon(node);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return new CharacterWeapon();
             }
@@ -285,22 +283,23 @@ namespace LodestoneParser
 
         public List<CharacterItem> GetCharacterItems()
         {
-            return new List<CharacterItem>()
-            {
-                GetWeapon(),
-                GetHeadGear(),
-                GetChestGear(),
-                GetArmGear(),
-                GetWaistGear(),
-                GetLegGear(),
-                GetFootGear(),
-                GetOffhand(),
-                GetEarrings(),
-                GetNecklace(),
-                GetBracelet(),
-                GetRing1(),
-                GetRing2()
-            };
+            var items = new List<CharacterItem>();
+
+            items.Add(GetWeapon());
+            items.Add(GetHeadGear());
+            items.Add(GetChestGear());
+            items.Add(GetArmGear());
+            items.Add(GetWaistGear());
+            items.Add(GetLegGear());
+            items.Add(GetFootGear());
+            items.Add(GetOffhand());
+            items.Add(GetEarrings());
+            items.Add(GetNecklace());
+            items.Add(GetBracelet());
+            items.Add(GetRing1());
+            items.Add(GetRing2());
+
+            return items;
         }
 
         /// <summary>

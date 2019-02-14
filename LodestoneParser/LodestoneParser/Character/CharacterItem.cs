@@ -111,19 +111,39 @@ namespace LodestoneParser.Character
             }
 
             BonusStats = stats;
-            RepairInfo = new RepairInfo(node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[9].ChildNodes);
-            var company = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[0].FirstChild.Attributes["data-tooltip"].Value;
-            var glamour = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[1].FirstChild.Attributes["data-tooltip"].Value;
-            var armoire = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[2].FirstChild.Attributes["data-tooltip"].Value;
 
-            CompanyCrest = !company.Contains("Cannot");
-            GlamourChest = !glamour.Contains("Cannot");
-            Armoire = !armoire.Contains("Cannot");
+            if(node.FirstChild.FirstChild.ChildNodes[4].ChildNodes.Count > 8)
+            {
+                // Account for Materia
+                RepairInfo = new RepairInfo(node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[9].ChildNodes);
 
-            Convertible = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[0].ChildNodes["span"].InnerText == "Yes");
-            Projectable = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[1].ChildNodes["span"].InnerText == "Yes");
-            Desynthesizable = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[2].ChildNodes["span"].InnerText == "Yes");
-            Dyable = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[3].ChildNodes["span"].InnerText == "Yes");
+                var company = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[0].FirstChild.Attributes["data-tooltip"].Value;
+                var glamour = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[1].FirstChild.Attributes["data-tooltip"].Value;
+                var armoire = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[2].FirstChild.Attributes["data-tooltip"].Value;
+
+                CompanyCrest = !company.Contains("Cannot");
+                GlamourChest = !glamour.Contains("Cannot");
+                Armoire = !armoire.Contains("Cannot");
+
+                Convertible = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[0].ChildNodes["span"].InnerText == "Yes");
+                Projectable = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[1].ChildNodes["span"].InnerText == "Yes");
+                Desynthesizable = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[2].ChildNodes["span"].InnerText == "Yes");
+                Dyable = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[3].ChildNodes["span"].InnerText == "Yes");
+            }
+            else
+            {
+                // No Materia
+                RepairInfo = ErrorObjects.RepairInfo;
+
+                CompanyCrest = false;
+                GlamourChest = false;
+                Armoire = false;
+
+                Convertible = false;
+                Projectable = false;
+                Desynthesizable = false;
+                Dyable = false;
+            }
         }
     }
 
@@ -188,6 +208,13 @@ namespace LodestoneParser.Character
         public int Level { get; set; }
 
         public int MaterialGrade { get; set; }
+
+        public RepairInfo(JobEnum job, int level, int grade)
+        {
+            Job = job;
+            Level = level;
+            MaterialGrade = grade;
+        }
 
         public RepairInfo(HtmlNodeCollection nodes)
         {
