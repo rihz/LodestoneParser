@@ -13,7 +13,7 @@ namespace ParserConsole
             var parser = new LodestoneParser.LodestoneParser();
             parser.LoadCharacter(6738422);
 
-            var items = parser.GetCharacterItems();
+            var character = parser.GetCharacterInventory();
         }
     }
 }

@@ -281,27 +281,13 @@ namespace LodestoneParser
             return new CharacterGear(node);
         }
 
-        public List<CharacterItem> GetCharacterItems()
+        public CharacterInventory GetCharacterInventory()
         {
-            var items = new List<CharacterItem>();
-
-            items.Add(GetWeapon());
-            items.Add(GetHeadGear());
-            items.Add(GetChestGear());
-            items.Add(GetArmGear());
-            items.Add(GetWaistGear());
-            items.Add(GetLegGear());
-            items.Add(GetFootGear());
-            items.Add(GetOffhand());
-            items.Add(GetEarrings());
-            items.Add(GetNecklace());
-            items.Add(GetBracelet());
-            items.Add(GetRing1());
-            items.Add(GetRing2());
-
-            return items;
+            return new CharacterInventory(GetWeapon(), GetHeadGear(), GetChestGear(), GetArmGear(),
+                GetWaistGear(), GetLegGear(), GetFootGear(), GetOffhand(), GetEarrings(), GetNecklace(),
+                GetBracelet(), GetRing1(), GetRing2());
         }
-
+        
         /// <summary>
         /// Get a node on the loaded character's Lodestone page.
         /// </summary>
