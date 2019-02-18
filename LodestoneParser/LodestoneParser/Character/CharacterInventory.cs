@@ -20,7 +20,7 @@ namespace LodestoneParser.Character
 
         public CharacterGear Feet { get; set; }
 
-        public CharacterWeapon Offhand { get; set; }
+        public CharacterGear Offhand { get; set; }
 
         public CharacterGear Earrings { get; set; }
 
@@ -34,7 +34,7 @@ namespace LodestoneParser.Character
 
         public CharacterInventory(CharacterWeapon weapon, CharacterGear head, CharacterGear chest,
             CharacterGear arms, CharacterGear waist, CharacterGear legs, CharacterGear feet,
-            CharacterWeapon offhand, CharacterGear earrings, CharacterGear necklace, 
+            CharacterGear offhand, CharacterGear earrings, CharacterGear necklace, 
             CharacterGear bracelet, CharacterGear ring1, CharacterGear ring2)
         {
             Weapon = weapon;
@@ -94,7 +94,7 @@ namespace LodestoneParser.Character
 
     public class CharacterRightSide
     {
-        public CharacterWeapon Offhand { get; set; }
+        public CharacterGear Offhand { get; set; }
 
         public CharacterGear Earrings { get; set; }
 
@@ -106,7 +106,7 @@ namespace LodestoneParser.Character
 
         public CharacterGear Ring2 { get; set; }
 
-        public CharacterRightSide(CharacterWeapon offhand, CharacterGear earrings, CharacterGear necklace,
+        public CharacterRightSide(CharacterGear offhand, CharacterGear earrings, CharacterGear necklace,
             CharacterGear bracelet, CharacterGear ring1, CharacterGear ring2)
         {
             Offhand = offhand;

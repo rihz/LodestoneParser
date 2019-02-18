@@ -3,7 +3,7 @@ using LodestoneParser.Enums;
 using LodestoneParser.Logic;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace LodestoneParser.Character
 {
@@ -35,9 +35,14 @@ namespace LodestoneParser.Character
 
         public bool Dyable { get; set; }
 
-        public List<StatEnum> MateriaStats { get; set; }
+        public List<Materia> MateriaInfo { get; set; }
 
-        public List<int> MateriaValues { get; set; }
+        public int EmptyMateriaSlots { get; set; }
+
+        public bool Validate()
+        {
+            return RepairInfo != ErrorObjects.RepairInfo;
+        }
     }
 
     public class CharacterWeapon : CharacterItem
@@ -57,14 +62,30 @@ namespace LodestoneParser.Character
             AutoAttack = decimal.Parse(node.FirstChild.ChildNodes[3].FirstChild.LastChild.ChildNodes[1].FirstChild.InnerText);
             Delay = decimal.Parse(node.FirstChild.ChildNodes[3].FirstChild.LastChild.ChildNodes[2].FirstChild.InnerText);
             EquippableBy = new List<EquippableJob>()
+                {
+                    new EquippableJob(node.FirstChild.ChildNodes[4].FirstChild)
+                };
+
+            var emptySlotCount = node.FirstChild.ChildNodes[4].Descendants("ul").Where(d => d.GetAttributeValue("class", "").Contains("db-tooltip__materia__normal")).Count();
+            var materiaNodes = node.FirstChild.ChildNodes[4].Descendants("ul").Where(d => d.GetAttributeValue("class", "").Contains("db-tooltip__materia"));
+
+            MateriaInfo = new List<Materia>();
+            if (materiaNodes.Count() > 0)
             {
-                new EquippableJob(node.FirstChild.ChildNodes[4].FirstChild)
-            };
+                var materia = materiaNodes.First().ChildNodes;
+
+                foreach (var mat in materia)
+                {
+                    MateriaInfo.Add(new Materia(mat));
+                }
+            }
+
+            EmptyMateriaSlots = emptySlotCount;
 
             var stats = new List<BonusStat>();
             var statNodes = node.FirstChild.ChildNodes[4].ChildNodes["ul"].ChildNodes;
 
-            foreach(var n in statNodes)
+            foreach (var n in statNodes)
             {
                 stats.Add(new BonusStat(n));
             }
@@ -95,12 +116,21 @@ namespace LodestoneParser.Character
 
         public int MagicDefense { get; set; }
 
+        public CharacterGear()
+        {
+            RepairInfo = ErrorObjects.RepairInfo;
+        }
+
         public CharacterGear(HtmlNode node)
         {
             IconUrl = node.FirstChild.FirstChild.FirstChild.ChildNodes[0].ChildNodes[0].ChildNodes["img"].Attributes["src"].Value;
             Name = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].ChildNodes["h2"].InnerText;
             ItemLevel = int.Parse(node.FirstChild.FirstChild.ChildNodes[2].InnerText.Substring(node.FirstChild.FirstChild.ChildNodes[2].InnerText.LastIndexOf(" ") + 1));
-            EquippableBy = EquippableJob.CreateList(node.FirstChild.FirstChild.ChildNodes[4].FirstChild);
+
+            if (node.FirstChild.FirstChild.ChildNodes[4].FirstChild.OriginalName != "hr")
+                EquippableBy = EquippableJob.CreateList(node.FirstChild.FirstChild.ChildNodes[4].FirstChild);
+            else
+                EquippableBy = EquippableJob.CreateList(node.FirstChild.FirstChild.ChildNodes[3].FirstChild);
 
             var stats = new List<BonusStat>();
             var statNodes = node.FirstChild.FirstChild.ChildNodes[4].ChildNodes["ul"].ChildNodes;
@@ -112,7 +142,7 @@ namespace LodestoneParser.Character
 
             BonusStats = stats;
 
-            if(node.FirstChild.FirstChild.ChildNodes[4].ChildNodes.Count > 8)
+            if (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes.Count > 8)
             {
                 // Account for Materia
                 RepairInfo = new RepairInfo(node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[9].ChildNodes);
@@ -175,8 +205,8 @@ namespace LodestoneParser.Character
             var level = int.Parse(node.LastChild.InnerText.Substring(node.LastChild.InnerText.LastIndexOf(" ") + 1));
 
             var job = fullString.Split(' ');
-            
-            foreach(var j in job)
+
+            foreach (var j in job)
             {
                 JobEnum parsed;
                 Enum.TryParse(j, out parsed);
@@ -235,9 +265,13 @@ namespace LodestoneParser.Character
 
         public int Value { get; set; }
 
-        public Materia()
-        {
+        public string Name { get; set; }
 
+        public Materia(HtmlNode node)
+        {
+            Name = node.InnerText;
+            Stat = StatParser.Parse(node.LastChild.InnerText);
+            Value = int.Parse(node.InnerText.Substring(node.InnerText.IndexOf('+') + 1));
         }
     }
 }

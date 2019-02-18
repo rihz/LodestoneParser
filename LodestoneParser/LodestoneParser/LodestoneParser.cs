@@ -232,17 +232,17 @@ namespace LodestoneParser
             return new CharacterGear(node);
         }
 
-        public CharacterWeapon GetOffhand()
+        public CharacterGear GetOffhand()
         {
             try
             {
                 var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div[3]/div[1]/div[2]");
 
-                return new CharacterWeapon(node);
+                return new CharacterGear(node);
             }
             catch (Exception ex)
             {
-                return new CharacterWeapon();
+                return new CharacterGear();
             }
         }
 
