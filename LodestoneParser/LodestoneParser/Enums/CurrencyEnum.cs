@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LodestoneParser.Enums
+﻿namespace LodestoneParser.Enums
 {
+    /// <summary>
+    /// Enumeration for the different Currencies available in Final Fantasy XIV.
+    /// </summary>
     public enum CurrencyEnum
     {
         Gil,

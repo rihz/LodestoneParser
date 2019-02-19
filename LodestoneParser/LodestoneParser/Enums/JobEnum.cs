@@ -4,6 +4,9 @@ using System.Text;
 
 namespace LodestoneParser.Enums
 {
+    /// <summary>
+    /// Enumeration for available Jobs.
+    /// </summary>
     public enum JobEnum
     {
         GLD,

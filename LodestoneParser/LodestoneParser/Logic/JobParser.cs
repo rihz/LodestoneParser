@@ -6,11 +6,20 @@ using System.Text;
 
 namespace LodestoneParser.Logic
 {
+    /// <summary>
+    /// Responsible for parsing strings and spitting out a relevant JobEnum.
+    /// </summary>
     public static class JobParser
     {
+        #region Public Static Methods
+        /// <summary>
+        /// Parse a string to a JobEnum.
+        /// </summary>
+        /// <param name="toParse">String to be parsed.</param>
+        /// <returns>JobEnum based on the parsed string.</returns>
         public static JobEnum Parse(string toParse)
         {
-            switch(toParse)
+            switch (toParse)
             {
                 case "Gladiator":
                 case "GLD":
@@ -96,6 +105,7 @@ namespace LodestoneParser.Logic
                     return JobEnum.FSH;
 
             }
-        }
+        } 
+        #endregion
     }
 }

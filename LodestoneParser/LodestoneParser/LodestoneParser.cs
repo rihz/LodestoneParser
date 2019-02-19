@@ -7,15 +7,26 @@ using System.Collections.Generic;
 
 namespace LodestoneParser
 {
+    /// <summary>
+    /// Responsible for parsing the Final Fantasy XIV Lodestone website for details on a character.
+    /// </summary>
     public class LodestoneParser
     {
+        #region Variables
         const string _url = "https://na.finalfantasyxiv.com/lodestone/character/{0}/";
 
         HtmlNode _doc = null;
+        #endregion
 
+        #region Constructor
+        /// <summary>
+        /// Create a new instance of Lodestone Parser.
+        /// </summary>
         public LodestoneParser()
         { }
+        #endregion
 
+        #region Public Methods
         /// <summary>
         /// Load a character's Lodestone page.
         /// </summary>
@@ -183,6 +194,10 @@ namespace LodestoneParser
             return GetProfile().Contains(check);
         }
 
+        /// <summary>
+        /// Get the weapon currently equipped on the character.
+        /// </summary>
+        /// <returns>CharacterWeapon object with details on character's weapon.</returns>
         public CharacterWeapon GetWeapon()
         {
             var node = GetSingleNodeForCharacter("//div[@class='character__class__arms']/div[1]/div/div");
@@ -190,6 +205,10 @@ namespace LodestoneParser
             return new CharacterWeapon(node);
         }
 
+        /// <summary>
+        /// Get the head equipment currently equipped on the character.
+        /// </summary>
+        /// <returns>CharacterGear object with details on character's head equipment.</returns>
         public CharacterGear GetHeadGear()
         {
             var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div/div[1]/div[last()]");
@@ -197,6 +216,10 @@ namespace LodestoneParser
             return new CharacterGear(node);
         }
 
+        /// <summary>
+        /// Get the chest equipment currently equipped on the character.
+        /// </summary>
+        /// <returns>CharacterGear object with details on character's chest equipment.</returns>
         public CharacterGear GetChestGear()
         {
             var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div/div[2]/div[last()]");
@@ -204,6 +227,10 @@ namespace LodestoneParser
             return new CharacterGear(node);
         }
 
+        /// <summary>
+        /// Get the arm equipment currently equipped on the character.
+        /// </summary>
+        /// <returns>CharacterGear object with details on character's arm equipment.</returns>
         public CharacterGear GetArmGear()
         {
             var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div/div[3]/div[last()]");
@@ -211,6 +238,10 @@ namespace LodestoneParser
             return new CharacterGear(node);
         }
 
+        /// <summary>
+        /// Get the waist equipment currently equipped on the character.
+        /// </summary>
+        /// <returns>CharacterGear object with details on character's waist equipment.</returns>
         public CharacterGear GetWaistGear()
         {
             var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div/div[4]/div[last()]");
@@ -218,6 +249,10 @@ namespace LodestoneParser
             return new CharacterGear(node);
         }
 
+        /// <summary>
+        /// Get the leg equipment currently equipped on the character.
+        /// </summary>
+        /// <returns>CharacterGear object with details on character's leg equipment.</returns>
         public CharacterGear GetLegGear()
         {
             var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div/div[5]/div[last()]");
@@ -225,6 +260,10 @@ namespace LodestoneParser
             return new CharacterGear(node);
         }
 
+        /// <summary>
+        /// Get the foot equipment currently equipped on the character.
+        /// </summary>
+        /// <returns>CharacterGear object with details on character's foot equipment.</returns>
         public CharacterGear GetFootGear()
         {
             var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div/div[6]/div[last()]");
@@ -232,6 +271,10 @@ namespace LodestoneParser
             return new CharacterGear(node);
         }
 
+        /// <summary>
+        /// Get the offhand equipment currently equipped on the character.
+        /// </summary>
+        /// <returns>CharacterGear object with details on character's offhand equipment.</returns>
         public CharacterGear GetOffhand()
         {
             try
@@ -246,6 +289,10 @@ namespace LodestoneParser
             }
         }
 
+        /// <summary>
+        /// Get the earring equipment currently equipped on the character.
+        /// </summary>
+        /// <returns>CharacterGear object with details on character's earring equipment.</returns>
         public CharacterGear GetEarrings()
         {
             var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div[3]/div[2]/div[2]");
@@ -253,6 +300,10 @@ namespace LodestoneParser
             return new CharacterGear(node);
         }
 
+        /// <summary>
+        /// Get the necklace equipment currently equipped on the character.
+        /// </summary>
+        /// <returns>CharacterGear object with details on character's necklace equipment.</returns>
         public CharacterGear GetNecklace()
         {
             var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div[3]/div[3]/div[2]");
@@ -260,6 +311,10 @@ namespace LodestoneParser
             return new CharacterGear(node);
         }
 
+        /// <summary>
+        /// Get the bracelet equipment currently equipped on the character.
+        /// </summary>
+        /// <returns>CharacterGear object with details on character's bracelet equipment.</returns>
         public CharacterGear GetBracelet()
         {
             var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div[3]/div[4]/div[2]");
@@ -267,6 +322,10 @@ namespace LodestoneParser
             return new CharacterGear(node);
         }
 
+        /// <summary>
+        /// Get the first ring equipment currently equipped on the character.
+        /// </summary>
+        /// <returns>CharacterGear object with details on character's first ring equipment.</returns>
         public CharacterGear GetRing1()
         {
             var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div[3]/div[5]/div[2]");
@@ -274,6 +333,10 @@ namespace LodestoneParser
             return new CharacterGear(node);
         }
 
+        /// <summary>
+        /// Get the second ring equipment currently equipped on the character.
+        /// </summary>
+        /// <returns>CharacterGear object with details on character's second ring equipment.</returns>
         public CharacterGear GetRing2()
         {
             var node = GetSingleNodeForCharacter("//div[@class='character__detail']/div[3]/div[6]/div[2]");
@@ -281,13 +344,19 @@ namespace LodestoneParser
             return new CharacterGear(node);
         }
 
+        /// <summary>
+        /// Get the character's full inventory.
+        /// </summary>
+        /// <returns>CharacterInventory object with details on all of the character's equipment.</returns>
         public CharacterInventory GetCharacterInventory()
         {
             return new CharacterInventory(GetWeapon(), GetHeadGear(), GetChestGear(), GetArmGear(),
                 GetWaistGear(), GetLegGear(), GetFootGear(), GetOffhand(), GetEarrings(), GetNecklace(),
                 GetBracelet(), GetRing1(), GetRing2());
         }
-        
+        #endregion
+
+        #region Private Methods
         /// <summary>
         /// Get a node on the loaded character's Lodestone page.
         /// </summary>
@@ -312,5 +381,6 @@ namespace LodestoneParser
                 ? _doc.SelectNodes(xpath)
                 : throw new CharacterNotLoadedException();
         }
+        #endregion
     }
 }

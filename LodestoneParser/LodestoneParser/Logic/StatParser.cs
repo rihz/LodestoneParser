@@ -5,11 +5,20 @@ using System.Text;
 
 namespace LodestoneParser.Logic
 {
+    /// <summary>
+    /// Responsible for parsing strings and spitting out a relevant StatEnum.
+    /// </summary>
     public static class StatParser
     {
+        #region Public Static Methods
+        /// <summary>
+        /// Parse a string to a StatEnum.
+        /// </summary>
+        /// <param name="toParse">String to be parsed.</param>
+        /// <returns>StatEnum based on the parsed string.</returns>
         public static StatEnum Parse(string toParse)
         {
-            switch(toParse)
+            switch (toParse)
             {
                 case "Strength":
                     return StatEnum.Strength;
@@ -43,6 +52,7 @@ namespace LodestoneParser.Logic
                 default:
                     return StatEnum.Determination;
             }
-        }
+        } 
+        #endregion
     }
 }

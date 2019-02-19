@@ -4,6 +4,9 @@ using System.Text;
 
 namespace LodestoneParser.Enums
 {
+    /// <summary>
+    /// Enumeration for available Reputations.
+    /// </summary>
     public enum ReputationEnum
     {
         Commendations,

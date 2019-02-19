@@ -4,6 +4,9 @@ using System.Text;
 
 namespace LodestoneParser.Enums
 {
+    /// <summary>
+    /// Enumeration for stat types.
+    /// </summary>
     public enum StatEnum
     {
          Strength,
