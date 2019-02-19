@@ -18,6 +18,8 @@ namespace LodestoneParser.Enums
          Gathering,
          Perception,
          CriticalHit,
-         Determination
+         Determination,
+         CP,
+         GP
     }
 }

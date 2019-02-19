@@ -25,7 +25,7 @@ namespace LodestoneParser.Logic
                     return StatEnum.SkillSpeed;
                 case "Spell Speed":
                     return StatEnum.SpellSpeed;
-                case "Craftmanship":
+                case "Craftsmanship":
                     return StatEnum.Craftsmanship;
                 case "Control":
                     return StatEnum.Control;
@@ -35,6 +35,10 @@ namespace LodestoneParser.Logic
                     return StatEnum.Perception;
                 case "Critical Hit":
                     return StatEnum.CriticalHit;
+                case "CP":
+                    return StatEnum.CP;
+                case "GP":
+                    return StatEnum.GP;
                 case "Determination":
                 default:
                     return StatEnum.Determination;

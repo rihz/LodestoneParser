@@ -14,7 +14,6 @@ namespace ParserConsole
             parser.LoadCharacter(6738422);
 
             var character = parser.GetCharacterInventory();
-
         }
     }
 }

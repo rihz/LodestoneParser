@@ -56,7 +56,7 @@ namespace LodestoneParser.Character
         public CharacterWeapon(HtmlNode node)
         {
             IconUrl = node.FirstChild.FirstChild.ChildNodes[0].ChildNodes[0].ChildNodes["img"].Attributes["src"].Value;
-            Name = node.FirstChild.FirstChild.FirstChild.ChildNodes[1].ChildNodes["h2"].InnerText;
+            Name = node.FirstChild.FirstChild.FirstChild.ChildNodes[1].ChildNodes["h2"].InnerText.Replace("&#39;", "'");
             ItemLevel = int.Parse(node.FirstChild.ChildNodes[2].InnerText.Substring(node.FirstChild.ChildNodes[2].InnerText.LastIndexOf(" ") + 1));
             Damage = int.Parse(node.FirstChild.ChildNodes[3].FirstChild.LastChild.FirstChild.FirstChild.InnerText);
             AutoAttack = decimal.Parse(node.FirstChild.ChildNodes[3].FirstChild.LastChild.ChildNodes[1].FirstChild.InnerText);
@@ -124,56 +124,136 @@ namespace LodestoneParser.Character
         public CharacterGear(HtmlNode node)
         {
             IconUrl = node.FirstChild.FirstChild.FirstChild.ChildNodes[0].ChildNodes[0].ChildNodes["img"].Attributes["src"].Value;
-            Name = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].ChildNodes["h2"].InnerText;
+            Name = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].ChildNodes["h2"].InnerText.Replace("&#39;", "'");
             ItemLevel = int.Parse(node.FirstChild.FirstChild.ChildNodes[2].InnerText.Substring(node.FirstChild.FirstChild.ChildNodes[2].InnerText.LastIndexOf(" ") + 1));
+            Defense = int.Parse(node.FirstChild.FirstChild.ChildNodes[3].FirstChild.LastChild.FirstChild.FirstChild.InnerText);
+            MagicDefense = int.Parse(node.FirstChild.FirstChild.ChildNodes[3].FirstChild.LastChild.LastChild.FirstChild.InnerText);
 
             if (node.FirstChild.FirstChild.ChildNodes[4].FirstChild.OriginalName != "hr")
+            {
                 EquippableBy = EquippableJob.CreateList(node.FirstChild.FirstChild.ChildNodes[4].FirstChild);
+                
+                var materiaNodes = node.FirstChild.FirstChild.ChildNodes[4].Descendants("ul").Where(d => d.GetAttributeValue("class", "").Contains("db-tooltip__materia"));
+
+                EmptyMateriaSlots = 0;
+                MateriaInfo = new List<Materia>();
+                if (materiaNodes.Count() > 0)
+                {
+                    var materia = materiaNodes.First().ChildNodes;
+
+                    foreach (var mat in materia)
+                    {
+                        if(mat.InnerText == "&nbsp;")
+                        {
+                            EmptyMateriaSlots++;
+                        }
+                        else
+                        {
+                            MateriaInfo.Add(new Materia(mat));
+                        }                       
+                    }
+                }
+
+                var stats = new List<BonusStat>();
+                var statNodes = node.FirstChild.FirstChild.ChildNodes[4].ChildNodes["ul"].ChildNodes;
+
+                foreach (var n in statNodes)
+                {
+                    stats.Add(new BonusStat(n));
+                }
+
+                BonusStats = stats;
+
+
+                if (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes.Count > 8)
+                {
+                    // Account for Materia
+                    RepairInfo = new RepairInfo(node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[9].ChildNodes);
+
+                    var company = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[0].FirstChild.Attributes["data-tooltip"].Value;
+                    var glamour = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[1].FirstChild.Attributes["data-tooltip"].Value;
+                    var armoire = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[2].FirstChild.Attributes["data-tooltip"].Value;
+
+                    CompanyCrest = !company.Contains("Cannot");
+                    GlamourChest = !glamour.Contains("Cannot");
+                    Armoire = !armoire.Contains("Cannot");
+
+                    Convertible = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[0].ChildNodes["span"].InnerText == "Yes");
+                    Projectable = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[1].ChildNodes["span"].InnerText == "Yes");
+                    Desynthesizable = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[2].ChildNodes["span"].InnerText == "Yes");
+                    Dyable = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[3].ChildNodes["span"].InnerText == "Yes");
+                }
+                else
+                {
+                    // No Materia
+                    RepairInfo = new RepairInfo(node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[6].ChildNodes);
+
+                    var company = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[0].FirstChild.Attributes["data-tooltip"].Value;
+                    var glamour = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[1].FirstChild.Attributes["data-tooltip"].Value;
+                    var armoire = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[2].FirstChild.Attributes["data-tooltip"].Value;
+
+                    CompanyCrest = !company.Contains("Cannot");
+                    GlamourChest = !glamour.Contains("Cannot");
+                    Armoire = !armoire.Contains("Cannot");
+
+                    Convertible = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[7].ChildNodes[0].ChildNodes["span"].InnerText == "Yes");
+                    Projectable = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[7].ChildNodes[1].ChildNodes["span"].InnerText == "Yes");
+                    Desynthesizable = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[7].ChildNodes[2].ChildNodes["span"].InnerText == "Yes");
+                    Dyable = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[7].ChildNodes[3].ChildNodes["span"].InnerText == "Yes");
+                }
+            }
             else
+            {
                 EquippableBy = EquippableJob.CreateList(node.FirstChild.FirstChild.ChildNodes[3].FirstChild);
 
-            var stats = new List<BonusStat>();
-            var statNodes = node.FirstChild.FirstChild.ChildNodes[4].ChildNodes["ul"].ChildNodes;
+                var stats = new List<BonusStat>();
+                var statNodes = node.FirstChild.FirstChild.ChildNodes[3].ChildNodes["ul"].ChildNodes;
 
-            foreach (var n in statNodes)
-            {
-                stats.Add(new BonusStat(n));
-            }
+                foreach (var n in statNodes)
+                {
+                    stats.Add(new BonusStat(n));
+                }
 
-            BonusStats = stats;
+                BonusStats = stats;
+                
 
-            if (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes.Count > 8)
-            {
-                // Account for Materia
-                RepairInfo = new RepairInfo(node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[9].ChildNodes);
+                if (node.FirstChild.FirstChild.ChildNodes[3].ChildNodes.Count > 8)
+                {
+                    // Account for Materia
+                    RepairInfo = new RepairInfo(node.FirstChild.FirstChild.ChildNodes[3].ChildNodes[9].ChildNodes);
 
-                var company = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[0].FirstChild.Attributes["data-tooltip"].Value;
-                var glamour = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[1].FirstChild.Attributes["data-tooltip"].Value;
-                var armoire = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[2].FirstChild.Attributes["data-tooltip"].Value;
+                    var company = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[0].FirstChild.Attributes["data-tooltip"].Value;
+                    var glamour = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[1].FirstChild.Attributes["data-tooltip"].Value;
+                    var armoire = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[2].FirstChild.Attributes["data-tooltip"].Value;
 
-                CompanyCrest = !company.Contains("Cannot");
-                GlamourChest = !glamour.Contains("Cannot");
-                Armoire = !armoire.Contains("Cannot");
+                    CompanyCrest = !company.Contains("Cannot");
+                    GlamourChest = !glamour.Contains("Cannot");
+                    Armoire = !armoire.Contains("Cannot");
 
-                Convertible = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[0].ChildNodes["span"].InnerText == "Yes");
-                Projectable = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[1].ChildNodes["span"].InnerText == "Yes");
-                Desynthesizable = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[2].ChildNodes["span"].InnerText == "Yes");
-                Dyable = (node.FirstChild.FirstChild.ChildNodes[4].ChildNodes[10].ChildNodes[3].ChildNodes["span"].InnerText == "Yes");
-            }
-            else
-            {
-                // No Materia
-                RepairInfo = ErrorObjects.RepairInfo;
+                    Convertible = (node.FirstChild.FirstChild.ChildNodes[3].ChildNodes[10].ChildNodes[0].ChildNodes["span"].InnerText == "Yes");
+                    Projectable = (node.FirstChild.FirstChild.ChildNodes[3].ChildNodes[10].ChildNodes[1].ChildNodes["span"].InnerText == "Yes");
+                    Desynthesizable = (node.FirstChild.FirstChild.ChildNodes[3].ChildNodes[10].ChildNodes[2].ChildNodes["span"].InnerText == "Yes");
+                    Dyable = (node.FirstChild.FirstChild.ChildNodes[3].ChildNodes[10].ChildNodes[3].ChildNodes["span"].InnerText == "Yes");
+                }
+                else
+                {
+                    // No Materia
+                    RepairInfo = new RepairInfo(node.FirstChild.FirstChild.ChildNodes[3].ChildNodes[9].ChildNodes);
 
-                CompanyCrest = false;
-                GlamourChest = false;
-                Armoire = false;
+                    var company = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[0].FirstChild.Attributes["data-tooltip"].Value;
+                    var glamour = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[1].FirstChild.Attributes["data-tooltip"].Value;
+                    var armoire = node.FirstChild.FirstChild.FirstChild.FirstChild.ChildNodes[1].FirstChild.ChildNodes["ul"].ChildNodes[2].FirstChild.Attributes["data-tooltip"].Value;
 
-                Convertible = false;
-                Projectable = false;
-                Desynthesizable = false;
-                Dyable = false;
-            }
+                    CompanyCrest = !company.Contains("Cannot");
+                    GlamourChest = !glamour.Contains("Cannot");
+                    Armoire = !armoire.Contains("Cannot");
+
+                    Convertible = (node.FirstChild.FirstChild.ChildNodes[3].ChildNodes[10].ChildNodes[0].ChildNodes["span"].InnerText == "Yes");
+                    Projectable = (node.FirstChild.FirstChild.ChildNodes[3].ChildNodes[10].ChildNodes[1].ChildNodes["span"].InnerText == "Yes");
+                    Desynthesizable = (node.FirstChild.FirstChild.ChildNodes[3].ChildNodes[10].ChildNodes[2].ChildNodes["span"].InnerText == "Yes");
+                    Dyable = (node.FirstChild.FirstChild.ChildNodes[3].ChildNodes[10].ChildNodes[3].ChildNodes["span"].InnerText == "Yes");
+                }
+            }      
         }
     }
 
@@ -204,14 +284,53 @@ namespace LodestoneParser.Character
             var fullString = node.FirstChild.FirstChild.InnerText;
             var level = int.Parse(node.LastChild.InnerText.Substring(node.LastChild.InnerText.LastIndexOf(" ") + 1));
 
-            var job = fullString.Split(' ');
 
-            foreach (var j in job)
+            if (fullString == "All Classes")
             {
-                JobEnum parsed;
-                Enum.TryParse(j, out parsed);
+                foreach (JobEnum job in (JobEnum[])Enum.GetValues(typeof(JobEnum)))
+                {
+                    list.Add(new EquippableJob(job, level));
+                }
+            }
+            else if(fullString == "Disciple of the Hand")
+            {
+                list.AddRange(CreateMultiple(Disciplines.GetDisciplesOfHand(), level));
+            }
+            else if(fullString == "Disciple of the Land")
+            {
+                list.AddRange(CreateMultiple(Disciplines.GetDisciplesOfLand(), level));
+            }
+            else if (fullString == "Disciple of War")
+            {
+                list.AddRange(CreateMultiple(Disciplines.GetDisciplesOfWar(), level));
+            }
+            else if (fullString == "Disciple of Magic")
+            {
+                list.AddRange(CreateMultiple(Disciplines.GetDisciplesOfMagic(), level));
+            }
+            else
+            {
+                var job = fullString.Split(' ');
 
-                list.Add(new EquippableJob(parsed, level));
+                foreach (var j in job)
+                {
+                    JobEnum parsed;
+                    Enum.TryParse(j, out parsed);
+
+                    list.Add(new EquippableJob(parsed, level));
+                }
+            }
+
+            return list;
+        }
+                
+        static List<EquippableJob> CreateMultiple(JobEnum[] jobs, int level)
+        {
+            var list = new List<EquippableJob>();
+
+            foreach (var job in jobs)
+            {
+                list.Add(new EquippableJob(job, level));
             }
 
             return list;
@@ -269,8 +388,8 @@ namespace LodestoneParser.Character
 
         public Materia(HtmlNode node)
         {
-            Name = node.InnerText;
-            Stat = StatParser.Parse(node.LastChild.InnerText);
+            Name = node.LastChild.FirstChild.InnerText.Replace("&#39;", "'");
+            Stat = StatParser.Parse(node.LastChild.LastChild.InnerText.Substring(0, node.LastChild.LastChild.InnerText.IndexOf('+') - 1));
             Value = int.Parse(node.InnerText.Substring(node.InnerText.IndexOf('+') + 1));
         }
     }
